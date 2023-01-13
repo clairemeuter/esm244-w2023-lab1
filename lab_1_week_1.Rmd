@@ -12,9 +12,35 @@ library(tidyverse)
 library(here)
 library(sf)
 library(tmap)
+#command shift return to run the whole chunk at once 
 ```
 
-```{r}
 
+### Read in our data 
+```{r}
+sf_trees <- read_csv(here("data", "sf_trees", "sf_trees.csv"))
+#read.csv is the built in, read_csv is an improved version in the tidyverse, it adds additional functionality. read_csv will generally eb faster anyways 
+```
+
+
+#exploratory in console
+#can use summary(sf_trees) to get an idea of what were seeing in the data set 
+#can also do names(sf_trees)
+#can also do sf_trees %>% group_by(legal_status) %>% summarize(tree_count = n())
+
+#more data exploration
+```{r}
+top_5_status <- sf_trees %>%
+  group_by(legal_status) %>%
+  summarize(tree_count = n()) %>%
+  slice_max(tree_count, n = 5) %>% #slice_max function finds the variables that are the maximum and only keep the top 5 (in this case bc n =5)
+  arrange(-tree_count)
+
+#make a plot of our data 
+ggplot(data = top_5_status, aes(x = fct_reorder(legal_status, tree_count), y =tree_count)) +
+  geom_col() +
+  labs(y = 'Tree Count', x ='Legal Status') + 
+  coord_flip() +
+  theme_minimal()
 ```
 
